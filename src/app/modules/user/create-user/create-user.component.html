@@ -1,0 +1,239 @@
+<form autocomplete="off" #createUserModal="ngForm" [busy]="isSaving">
+  <h1 style="cursor: grab;" cdkDrag cdkDragRootElement=".cdk-overlay-pane"  cdkDragHandle mat-dialog-title>{{l(title)}}</h1>
+  <mat-dialog-content style="width:700px;height:auto">
+    <mat-tab-group>
+      <mat-tab [label]="'UserDetails' | localize">
+        <br />
+        <div class="row-fluid">
+          <div class="col-md-6">
+            <mat-form-field>
+              <input [disabled]="user.id !== undefined" matInput name="UserName" [placeholder]="'UserName' | localize"
+                [(ngModel)]="user.userName" required maxlength="32" />
+            </mat-form-field>
+          </div>
+          <div class="col-md-6">
+            <mat-form-field>
+              <input matInput name="EmailAddress" [placeholder]="'EmailAddress' | localize"
+                [(ngModel)]="user.emailAddress" (keyup)="onEmailChange()" type="email" required maxlength="255"
+                pattern="^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" email="true" />
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+          <div class="col-md-6">
+            <mat-form-field>
+              <input matInput name="First Name" [placeholder]="'Name' | localize" [(ngModel)]="user.name"
+                maxlength="32" required/>
+            </mat-form-field>
+          </div>
+          <div class="col-md-6">
+            <mat-form-field>
+              <input matInput name="Surname" [placeholder]="'Surname' | localize" [(ngModel)]="user.surname"
+                maxlength="32" required />
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+          <!-- <div class="col-md-6">
+            <mat-form-field>
+              <input matInput name="User Code" [placeholder]="'User Code' | localize" [(ngModel)]="user.userCode"
+                 maxlength="5" />
+              <mat-icon style="color:#9E9E9E" matSuffix>border_color</mat-icon>
+            </mat-form-field>
+          </div> -->
+          <div class="col-md-6">
+            <mat-form-field>
+              <mat-label>Sex</mat-label>
+              <mat-select name="Sex" [(value)]="user.sex">
+                <mat-option *ngFor="let item of sexes" [value]="item.value">
+                  {{item.label}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-md-6">
+            <div class="checkbox-wrapper">
+              <mat-checkbox name="IsActive" [(ngModel)]="user.isActive">
+                {{ "IsActive" | localize }}
+              </mat-checkbox>
+            </div>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+          <div class="col-md-12">
+
+            <button *ngIf="!userId && enableNormalLogin" mat-raised-button color="primary"
+              (click)="randomPassword()" style="
+                  padding: 0 10px;
+                  min-width: 45px;
+                  color: white;
+                  height: 33px;
+                  font-size: 12px;
+                  margin-bottom: 1.2rem;">Random PassWord</button>
+
+          </div>
+        </div>
+        <div class="row-fluid" *ngIf="!userId && enableNormalLogin">
+
+          <div class="col-md-6">
+            <mat-form-field>
+              <input matInput #password="ngModel" [placeholder]="'Password' | localize" [(ngModel)]="user.password"
+                [type]="shPassword ? 'text' : 'password' " name="password" id="password" validateEqual="confirmPassword"
+                reverse="true" required maxlength="16" minlength="4" (focus)="activeRandom = false"
+                (ngModelChange)="backField($event)" />
+              <mat-icon (mousedown)="shPassword = true" (mouseup)="shPassword = false" (onmouseout)="shPassword = false"
+                matSuffix>{{shPassword ? 'visibility' : 'visibility_off'}}</mat-icon>
+            </mat-form-field>
+          </div>
+          <div class="col-md-6">
+            <mat-form-field>
+              <input matInput [placeholder]="'ConfirmPassword' | localize" [(ngModel)]="confirmPassword"
+                [type]="shConfirmPassword ? 'text' : 'password' " name="confirmPassword" id="confirmPassword"
+                validateEqual="password" reverse="false" required [value]="confirmPassword"
+                maxlength="16" />
+              <mat-icon (mousedown)="shConfirmPassword = true" (mouseup)="shConfirmPassword = false"
+                (onmouseout)="shConfirmPassword = false" matSuffix>
+                {{shConfirmPassword ? 'visibility' : 'visibility_off'}}</mat-icon>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+          <div class="col-md-6">
+            <mat-form-field>
+              <mat-label>Branch</mat-label>
+              <mat-select [(value)]='user.branch'>
+                <mat-option [value]='null'>None</mat-option>
+                <mat-option [value]='0'>Ha Noi</mat-option>
+                <mat-option [value]='1'>Da Nang</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-md-6">
+            <mat-form-field>
+              <mat-label>Manager</mat-label>
+              <mat-select [(value)]='user.managerId'>
+                <mat-option>
+                  <ngx-mat-select-search [formControl]="managerSearch" placeholderLabel="Search by Name"></ngx-mat-select-search>
+                </mat-option>
+                <mat-option [value]='null'>None</mat-option>
+                <mat-option *ngFor="let man of managersFiltered" [value]='man.id'>
+                  {{man.name}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+          <div class="col-md-6">
+            <mat-form-field>
+              <mat-label>Type</mat-label>
+              <mat-select [(value)]='user.type' (selectionChange)="onUserTypeChange()">
+                <mat-option [value]='null'>None</mat-option>
+                <mat-option [value]='0'>Staff</mat-option>
+                <mat-option [value]='1'>Internship</mat-option>
+                <mat-option [value]='2'>Collaborator</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-md-6">
+            <mat-form-field>
+              <mat-label>Level</mat-label>
+              <mat-select [(value)]='user.level' (selectionChange)="onLevelChange()">
+                <mat-option [value]='null'>None</mat-option>
+                <mat-option *ngFor="let item of listLevelFiltered" [value]='item.value'>
+                  {{item.name}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+          <div class="col-md-6">
+            <mat-form-field>             
+              <!-- <input matInput name="Start Date" [placeholder]="'Start Date' | localize" [formControl]="startDate"
+                [matDatepicker]="picker"/> -->
+                <input matInput name="StartDate" [(ngModel)]="user.startDateAt" [placeholder]="'Start Date' | localize" 
+                [matDatepicker]="pickerStartDate" />
+              <mat-datepicker-toggle matSuffix [for]="pickerStartDate"></mat-datepicker-toggle>
+              <mat-datepicker #pickerStartDate></mat-datepicker>
+            </mat-form-field>
+          </div>
+          <div class="col-md-6">
+            <mat-form-field>
+              <input matInput name="Salary At" [placeholder]="'Salary At' | localize" [(ngModel)]="user.salaryAt"
+                [matDatepicker]="pickerSalary"/>
+              <mat-datepicker-toggle matSuffix [for]="pickerSalary"></mat-datepicker-toggle>
+              <mat-datepicker #pickerSalary></mat-datepicker>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+          <div class="col-md-6">
+            <mat-form-field>
+              <input matInput name="Allowed Leaveday" [placeholder]="'Allow Leaveday' | localize"
+                [(ngModel)]="user.allowedLeaveDay" [readonly]='!user.id'/>
+            </mat-form-field>
+          </div>
+          <div class="col-md-6">
+            <mat-form-field>
+              <input currencyMask [options]="{prefix: '', align: 'left', thousands: '.', precision: '0'}" matInput name="Salary" [placeholder]="'Salary' | localize" [(ngModel)]="user.salary"/>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+          <div class="col-md-6">
+            <mat-form-field>
+              <input matInput name="Job Title" [placeholder]="'Job Title' | localize" [(ngModel)]="user.jobTitle"/>
+            </mat-form-field>
+          </div>
+          <div class="col-md-6">
+            <mat-form-field>
+              <input matInput name="Register Work Day" [placeholder]="'Register Work Day' | localize"
+                [(ngModel)]="user.registerWorkDay"/>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+          <div class="col-md-6">
+            <mat-form-field>
+              <input matInput name="Address" [placeholder]="'Address' | localize" [(ngModel)]="user.address" />
+            </mat-form-field>
+          </div>
+          <div class="col-md-6">
+            <mat-form-field>
+              <input matInput name="Phone" [(ngModel)]="user.phoneNumber" [placeholder]="'Phone' | localize"
+                pattern="^\w+[0-9]+$" maxlength="14" minlength="10" />
+            </mat-form-field>
+          </div>
+        </div>
+      </mat-tab>
+      <mat-tab [label]="'UserRoles' | localize">
+        <br />
+        <div class="row-fluid">
+          <ng-template ngFor let-role [ngForOf]="roles">
+            <div class="col-sm-12 col-md-12">
+              <div class="checkbox-wrapper">
+                <mat-checkbox [checked]="isRoleChecked(role.normalizedName)" (change)="onRoleChange(role, $event)">
+                  {{ role.name }}
+                </mat-checkbox>
+              </div>
+            </div>
+          </ng-template>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button class="btn btn-default" mat-raised-button mat-dialog-close [disabled]="saving">{{l('Cancel')}}</button>
+    <button mat-raised-button color="primary" (keyup.enter)="save()" (click)='save()' [disabled]="!createUserModal.form.valid  || ischeck || isSaving">{{l('Save')}}</button>
+  </mat-dialog-actions>
+</form>

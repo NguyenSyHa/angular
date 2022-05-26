@@ -1,0 +1,34 @@
+<div class="user-info">
+    <div style="display: flex; justify-content: flex-start; align-items: center; color: white; position: relative;">
+        <div class="image" style="cursor: pointer;" title="Update Avatar" (click)="updateAvatar(appSession.user.id)"> 
+            <img [src]="getAvatar()"  width="60" height="60"
+                alt="User" />
+        </div>
+        <div>
+            <div class="name" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{shownLoginName}}</div>
+            <div class="email">{{appSession.user.emailAddress}}</div>
+            <!-- <div style="display: flex; justify-content: flex-start; align-items: center;">
+                <div>Leavedays: {{appSession.user.allowedLeaveDay}}</div>
+                <div style="display: flex; align-items: center;">
+                    <i style="font-size: 18px; margin-left: 4px; cursor: pointer;" [title]="'You have '+ appSession.user.allowedLeaveDay + ' leavedays left'" class="icon-32 material-icons">help_outline</i>
+                </div>
+            </div> -->
+        </div>
+    </div>
+    <div class="btn-group user-helper-dropdown">
+        <i class="material-icons" style="cursor: pointer;" data-toggle="dropdown" aria-haspopup="true"
+            aria-expanded="true">keyboard_arrow_down</i>
+        <ul class="dropdown-menu pull-right">
+            <li><a (click)="logout()"><i class="material-icons">input</i>{{ 'Logout' | localize }}</a></li>
+        </ul>
+    </div>
+    <!-- <div class="info-container" style="top: 60px">
+        <div class="btn-group user-helper-dropdown">
+            <i class="material-icons" data-toggle="dropdown" aria-haspopup="true"
+                aria-expanded="true">keyboard_arrow_down</i>
+            <ul class="dropdown-menu pull-right">
+                <li><a (click)="logout()"><i class="material-icons">input</i>{{ 'Logout' | localize }}</a></li>
+            </ul>
+        </div>
+    </div> -->
+</div>

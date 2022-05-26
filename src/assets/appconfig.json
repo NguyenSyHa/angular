@@ -1,0 +1,19 @@
+{
+  "remoteServiceBaseUrl": "http://dev.timesheetapi.nccsoft.vn/",
+  "appBaseUrl": "http://localhost:4200",
+  "enableNormalLogin": true,
+  "localeMappings": [
+    {
+      "from": "pt-BR",
+      "to": "pt"
+    },
+    {
+      "from": "zh-CN",
+      "to": "zh"
+    },
+    {
+      "from": "he-IL",
+      "to": "he"
+    }
+  ]
+}
